@@ -496,9 +496,13 @@ struct MiniWaveformView: View {
     var body: some View {
         HStack(alignment: .center, spacing: 2) {
             ForEach(Array(interpolatedSamples.enumerated()), id: \.offset) { index, sample in
-                let mid = Double(Self.barCount - 1) / 2.0
-                let dist = abs(Double(index) - mid) / mid
-                let opacity = 0.20 + (1.0 - dist) * 0.70
+                let mid = CGFloat(Self.barCount - 1) / 2
+                let distance = abs(CGFloat(index) - mid) / mid
+                let opacity = 0.22 + (1 - Double(distance)) * 0.72
+                let centerBias = 0.82 + (1 - distance) * 0.40
+                let voicedSample = CGFloat(pow(Double(max(sample, 0.08)), 0.82)) * centerBias
+                let minHeight = 3 + (1 - distance) * 1.5
+                let barHeight = min(18, max(minHeight, voicedSample * 14))
 
                 Capsule()
                     .fill(
@@ -511,7 +515,7 @@ struct MiniWaveformView: View {
                             endPoint: .bottom
                         )
                     )
-                    .frame(width: 2, height: max(3, sample * 14))
+                    .frame(width: 2, height: barHeight)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
